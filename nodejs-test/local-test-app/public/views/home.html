@@ -1,0 +1,77 @@
+<nav class="navbar ghadow_gray no_border_radius">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span> 
+      </button>
+      <a class="navbar-brand" href="#">Demo web</a>
+    </div>
+    <div class="collapse navbar-collapse" id="myNavbar">
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="#/home">Home</a></li>
+        <li><a href="#">Page 1</a></li>
+        <li><a href="#">Page 2</a></li> 
+        <li><a href="#">Page 3</a></li> 
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+        <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+<div class="row bg-info">
+	<div class="col-md-4"></div>
+	<div class="col-md-4">
+		<h1 class="text-center">
+			Contact list
+		</h1>
+	</div>
+	<div class="col-md-4"></div>
+</div>
+<div class="table-responsive">
+  <table class="table ">
+    <thead>
+    	<th class="text-center active">Name</th>
+    	<th class="text-center active">email</th>
+    	<th class="text-center active">contact</th>
+      <th class="text-center active">Action</th>
+    </thead>
+    <tbody>
+      <tr class="success">
+        <th class="text-center">
+          <input ng-model="contactForm.name" type="text">
+        </th>
+        <th class="text-center">
+          <input ng-model="contactForm.email" type="text">
+        </th>
+        <th class="text-center">
+          <input ng-model="contactForm.number" type="text">
+        </th>
+        <th class="text-center">
+          <button class="btn btn-success btn-block" ng-if="visible_update_btn==false" ng-click="AddContact()">Add</button>
+          <button class="btn btn-success btn-block" ng-if="visible_update_btn==true" ng-click="UpdateContact()">Update</button>
+        </th>
+      </tr>
+    	<tr class="warning" ng-repeat="cntct in ContactList track by $index">
+    		<th class="text-center">{{cntct.name}}</th>
+    		<th class="text-center">{{cntct.email}}</th>
+    		<th class="text-center">{{cntct.number}}</th>
+        <th class="text-center">
+          <div class="row">
+            
+            <div class="col-md-6">
+              <button class="btn btn-info btn-block" ng-click="EditContact(cntct._id)">Edit</button>
+            </div>
+            <div class="col-md-6"><button class="btn btn-info btn-block" ng-click="DeleteContact(cntct._id)">Delete</button></div>
+          </div>
+        </th>
+    	</tr>
+    	
+    	
+    </tbody>
+  </table>
+  
+</div>

@@ -1,0 +1,127 @@
+/* Empty. Add your own CSS if you like */
+
+.scroll {
+    height: 100%;
+}
+
+/*#map_canvas {
+    height: 100%;
+    width: 100%;
+}*/
+
+.full_width{
+	width:100% !important;
+}
+.welcome_padding1{
+	padding: 25px 85px 25px 85px !important;
+}
+
+.text_center{
+	text-align: center !important;
+}
+.text_left{
+	text-align: left !important;
+}
+.text_right{
+	text-align: right !important;
+}
+.font_weight400{
+	font-weight: 400 !important;
+}
+.no_border_radius{
+	border-radius: 0px !important; 
+}
+.no_border{
+	border: none !important;
+}
+.no_margin{
+	margin: 0px !important;
+}
+
+.bar{
+	background: #05d7f1 !important;
+	box-shadow: 0px 0px 2px 0px black !important;
+}
+
+.box_shadow{
+	box-shadow: 0px 0px 2px 0px gray !important;
+}
+.border_radius5{
+	border-radius: 5px !important;
+}
+
+.no_padding{
+	padding: 0px !important;
+}
+
+.border1{
+	border: 1px solid gray !important;
+}
+
+.padding_signup_form_verticle_center{
+	padding: 12px 0px 12px 12px !important;
+}
+
+.brdr_btm_1{
+	border: none ;
+	border-bottom: 2px solid #009688 !important
+}
+.brdr_btm_2{
+	border: none ;
+	border-bottom: 2px solid white !important
+}
+
+.place_to_bottom{
+	position: absolute !important;
+    bottom: 0px !important;
+}
+.padding5{
+	padding: 5px !important;
+}
+
+
+/**color**/
+.white{
+	color: white !important;
+}
+.clr1{
+	color: #009688 !important;
+}
+.clr2{
+	color: #b6b6b6 !important;
+}
+
+/**background-colors**/
+.back_1{
+	background: #618933 !important;
+}
+.back_2{
+	background: #3c3c3c !important;
+}
+.back_trans{
+	background: rgba(240, 248, 255, 0) !important;
+}
+.back3{
+	background: #05d7f1 !important;
+}
+.back4{
+	background: aliceblue !important;
+}
+
+/**font-sizes**/
+.fs_28{
+	font-size: 28px !important;
+}
+
+/*custom buttons*/
+.btn_1{
+    margin: 0px !important;
+    padding: 0px !important;
+    line-height: 0px !important;
+    min-height: 28px !important;
+}
+
+/**custom popup**/
+.my-custom-popup .button{
+  background: #618933;
+}
