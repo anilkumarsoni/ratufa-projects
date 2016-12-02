@@ -3,7 +3,7 @@
 // angular.module is a global place for creating, registering and retrieving Angular modules
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
-angular.module('starter', ['ionic','starter.controllers', 'starter.services','ngCordova.plugins','firebase','Chat.configs','Chat.services','angular-md5','login.module','ngCordovaOauth'])
+angular.module('starter', ['ionic','starter.controllers', 'starter.services','ngCordova.plugins','firebase','Chat.configs','Chat.services','angular-md5','login.module','ngCordovaOauth','satellizer'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -18,6 +18,17 @@ angular.module('starter', ['ionic','starter.controllers', 'starter.services','ng
 
     
   });
+})
+.config(function($authProvider) {
+
+    // Twitter
+    $authProvider.twitter({
+      url: '/',
+      authorizationEndpoint: 'https://api.twitter.com/oauth/authenticate',
+      redirectUri: window.location.origin,
+      oauthType: '1.0',
+      popupOptions: { width: 495, height: 645 }
+    });
 })
 .config(['$ionicConfigProvider', function($ionicConfigProvider) {
 

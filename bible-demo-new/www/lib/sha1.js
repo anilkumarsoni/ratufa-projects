@@ -1,43 +1,1535 @@
-/*
- A JavaScript implementation of the SHA family of hashes, as
- defined in FIPS PUB 180-4 and FIPS PUB 202, as well as the corresponding
- HMAC implementation as defined in FIPS PUB 198a
- Copyright Brian Turek 2008-2016
- Distributed under the BSD License
- See http://caligatio.github.com/jsSHA/ for more information
- Several functions taken from Paul Johnston
-*/
-'use strict';(function(Y){function C(b,a,c){var g=0,d=[],n=0,h,l,e,f,m,q,u,r,I=!1,v=[],w=[],t,y=!1,A=!1,x=-1;c=c||{};h=c.encoding||"UTF8";t=c.numRounds||1;if(t!==parseInt(t,10)||1>t)throw Error("numRounds must a integer >= 1");if("SHA-1"===b)m=512,q=K,u=Z,f=160,r=function(a){return a.slice()};else if(0===b.lastIndexOf("SHA-",0))if(q=function(a,c){return L(a,c,b)},u=function(a,c,g,d){var k,f;if("SHA-224"===b||"SHA-256"===b)k=(c+65>>>9<<4)+15,f=16;else if("SHA-384"===b||"SHA-512"===b)k=(c+129>>>10<<
-5)+31,f=32;else throw Error("Unexpected error in SHA-2 implementation");for(;a.length<=k;)a.push(0);a[c>>>5]|=128<<24-c%32;c=c+g;a[k]=c&4294967295;a[k-1]=c/4294967296|0;g=a.length;for(c=0;c<g;c+=f)d=L(a.slice(c,c+f),d,b);if("SHA-224"===b)a=[d[0],d[1],d[2],d[3],d[4],d[5],d[6]];else if("SHA-256"===b)a=d;else if("SHA-384"===b)a=[d[0].a,d[0].b,d[1].a,d[1].b,d[2].a,d[2].b,d[3].a,d[3].b,d[4].a,d[4].b,d[5].a,d[5].b];else if("SHA-512"===b)a=[d[0].a,d[0].b,d[1].a,d[1].b,d[2].a,d[2].b,d[3].a,d[3].b,d[4].a,
-d[4].b,d[5].a,d[5].b,d[6].a,d[6].b,d[7].a,d[7].b];else throw Error("Unexpected error in SHA-2 implementation");return a},r=function(a){return a.slice()},"SHA-224"===b)m=512,f=224;else if("SHA-256"===b)m=512,f=256;else if("SHA-384"===b)m=1024,f=384;else if("SHA-512"===b)m=1024,f=512;else throw Error("Chosen SHA variant is not supported");else if(0===b.lastIndexOf("SHA3-",0)||0===b.lastIndexOf("SHAKE",0)){var F=6;q=D;r=function(a){var b=[],d;for(d=0;5>d;d+=1)b[d]=a[d].slice();return b};x=1;if("SHA3-224"===
-b)m=1152,f=224;else if("SHA3-256"===b)m=1088,f=256;else if("SHA3-384"===b)m=832,f=384;else if("SHA3-512"===b)m=576,f=512;else if("SHAKE128"===b)m=1344,f=-1,F=31,A=!0;else if("SHAKE256"===b)m=1088,f=-1,F=31,A=!0;else throw Error("Chosen SHA variant is not supported");u=function(a,b,d,c,g){d=m;var k=F,f,h=[],n=d>>>5,l=0,e=b>>>5;for(f=0;f<e&&b>=d;f+=n)c=D(a.slice(f,f+n),c),b-=d;a=a.slice(f);for(b%=d;a.length<n;)a.push(0);f=b>>>3;a[f>>2]^=k<<f%4*8;a[n-1]^=2147483648;for(c=D(a,c);32*h.length<g;){a=c[l%
-5][l/5|0];h.push(a.b);if(32*h.length>=g)break;h.push(a.a);l+=1;0===64*l%d&&D(null,c)}return h}}else throw Error("Chosen SHA variant is not supported");e=M(a,h,x);l=B(b);this.setHMACKey=function(a,d,c){var k;if(!0===I)throw Error("HMAC key already set");if(!0===y)throw Error("Cannot set HMAC key after calling update");if(!0===A)throw Error("SHAKE is not supported for HMAC");h=(c||{}).encoding||"UTF8";d=M(d,h,x)(a);a=d.binLen;d=d.value;k=m>>>3;c=k/4-1;if(k<a/8){for(d=u(d,a,0,B(b),f);d.length<=c;)d.push(0);
-d[c]&=4294967040}else if(k>a/8){for(;d.length<=c;)d.push(0);d[c]&=4294967040}for(a=0;a<=c;a+=1)v[a]=d[a]^909522486,w[a]=d[a]^1549556828;l=q(v,l);g=m;I=!0};this.update=function(a){var b,c,k,f=0,h=m>>>5;b=e(a,d,n);a=b.binLen;c=b.value;b=a>>>5;for(k=0;k<b;k+=h)f+m<=a&&(l=q(c.slice(k,k+h),l),f+=m);g+=f;d=c.slice(f>>>5);n=a%m;y=!0};this.getHash=function(a,c){var k,h,e,m;if(!0===I)throw Error("Cannot call getHash after setting HMAC key");e=N(c);if(!0===A){if(-1===e.shakeLen)throw Error("shakeLen must be specified in options");
-f=e.shakeLen}switch(a){case "HEX":k=function(a){return O(a,f,x,e)};break;case "B64":k=function(a){return P(a,f,x,e)};break;case "BYTES":k=function(a){return Q(a,f,x)};break;case "ARRAYBUFFER":try{h=new ArrayBuffer(0)}catch(p){throw Error("ARRAYBUFFER not supported by this environment");}k=function(a){return R(a,f,x)};break;default:throw Error("format must be HEX, B64, BYTES, or ARRAYBUFFER");}m=u(d.slice(),n,g,r(l),f);for(h=1;h<t;h+=1)!0===A&&0!==f%32&&(m[m.length-1]&=16777215>>>24-f%32),m=u(m,f,
-0,B(b),f);return k(m)};this.getHMAC=function(a,c){var k,h,e,p;if(!1===I)throw Error("Cannot call getHMAC without first setting HMAC key");e=N(c);switch(a){case "HEX":k=function(a){return O(a,f,x,e)};break;case "B64":k=function(a){return P(a,f,x,e)};break;case "BYTES":k=function(a){return Q(a,f,x)};break;case "ARRAYBUFFER":try{k=new ArrayBuffer(0)}catch(v){throw Error("ARRAYBUFFER not supported by this environment");}k=function(a){return R(a,f,x)};break;default:throw Error("outputFormat must be HEX, B64, BYTES, or ARRAYBUFFER");
-}h=u(d.slice(),n,g,r(l),f);p=q(w,B(b));p=u(h,f,m,p,f);return k(p)}}function c(b,a){this.a=b;this.b=a}function O(b,a,c,g){var d="";a/=8;var n,h,e;e=-1===c?3:0;for(n=0;n<a;n+=1)h=b[n>>>2]>>>8*(e+n%4*c),d+="0123456789abcdef".charAt(h>>>4&15)+"0123456789abcdef".charAt(h&15);return g.outputUpper?d.toUpperCase():d}function P(b,a,c,g){var d="",n=a/8,h,e,p,f;f=-1===c?3:0;for(h=0;h<n;h+=3)for(e=h+1<n?b[h+1>>>2]:0,p=h+2<n?b[h+2>>>2]:0,p=(b[h>>>2]>>>8*(f+h%4*c)&255)<<16|(e>>>8*(f+(h+1)%4*c)&255)<<8|p>>>8*(f+
-(h+2)%4*c)&255,e=0;4>e;e+=1)8*h+6*e<=a?d+="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".charAt(p>>>6*(3-e)&63):d+=g.b64Pad;return d}function Q(b,a,c){var g="";a/=8;var d,e,h;h=-1===c?3:0;for(d=0;d<a;d+=1)e=b[d>>>2]>>>8*(h+d%4*c)&255,g+=String.fromCharCode(e);return g}function R(b,a,c){a/=8;var g,d=new ArrayBuffer(a),e;e=-1===c?3:0;for(g=0;g<a;g+=1)d[g]=b[g>>>2]>>>8*(e+g%4*c)&255;return d}function N(b){var a={outputUpper:!1,b64Pad:"=",shakeLen:-1};b=b||{};a.outputUpper=b.outputUpper||
-!1;!0===b.hasOwnProperty("b64Pad")&&(a.b64Pad=b.b64Pad);if(!0===b.hasOwnProperty("shakeLen")){if(0!==b.shakeLen%8)throw Error("shakeLen must be a multiple of 8");a.shakeLen=b.shakeLen}if("boolean"!==typeof a.outputUpper)throw Error("Invalid outputUpper formatting option");if("string"!==typeof a.b64Pad)throw Error("Invalid b64Pad formatting option");return a}function M(b,a,c){switch(a){case "UTF8":case "UTF16BE":case "UTF16LE":break;default:throw Error("encoding must be UTF8, UTF16BE, or UTF16LE");
-}switch(b){case "HEX":b=function(a,b,e){var h=a.length,l,p,f,m,q,u;if(0!==h%2)throw Error("String of HEX type must be in byte increments");b=b||[0];e=e||0;q=e>>>3;u=-1===c?3:0;for(l=0;l<h;l+=2){p=parseInt(a.substr(l,2),16);if(isNaN(p))throw Error("String of HEX type contains invalid characters");m=(l>>>1)+q;for(f=m>>>2;b.length<=f;)b.push(0);b[f]|=p<<8*(u+m%4*c)}return{value:b,binLen:4*h+e}};break;case "TEXT":b=function(b,d,e){var h,l,p=0,f,m,q,u,r,t;d=d||[0];e=e||0;q=e>>>3;if("UTF8"===a)for(t=-1===
-c?3:0,f=0;f<b.length;f+=1)for(h=b.charCodeAt(f),l=[],128>h?l.push(h):2048>h?(l.push(192|h>>>6),l.push(128|h&63)):55296>h||57344<=h?l.push(224|h>>>12,128|h>>>6&63,128|h&63):(f+=1,h=65536+((h&1023)<<10|b.charCodeAt(f)&1023),l.push(240|h>>>18,128|h>>>12&63,128|h>>>6&63,128|h&63)),m=0;m<l.length;m+=1){r=p+q;for(u=r>>>2;d.length<=u;)d.push(0);d[u]|=l[m]<<8*(t+r%4*c);p+=1}else if("UTF16BE"===a||"UTF16LE"===a)for(t=-1===c?2:0,f=0;f<b.length;f+=1){h=b.charCodeAt(f);"UTF16LE"===a&&(m=h&255,h=m<<8|h>>>8);r=
-p+q;for(u=r>>>2;d.length<=u;)d.push(0);d[u]|=h<<8*(t+r%4*c);p+=2}return{value:d,binLen:8*p+e}};break;case "B64":b=function(a,b,e){var h=0,l,p,f,m,q,u,r,t;if(-1===a.search(/^[a-zA-Z0-9=+\/]+$/))throw Error("Invalid character in base-64 string");p=a.indexOf("=");a=a.replace(/\=/g,"");if(-1!==p&&p<a.length)throw Error("Invalid '=' found in base-64 string");b=b||[0];e=e||0;u=e>>>3;t=-1===c?3:0;for(p=0;p<a.length;p+=4){q=a.substr(p,4);for(f=m=0;f<q.length;f+=1)l="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".indexOf(q[f]),
-m|=l<<18-6*f;for(f=0;f<q.length-1;f+=1){r=h+u;for(l=r>>>2;b.length<=l;)b.push(0);b[l]|=(m>>>16-8*f&255)<<8*(t+r%4*c);h+=1}}return{value:b,binLen:8*h+e}};break;case "BYTES":b=function(a,b,e){var h,l,p,f,m,q;b=b||[0];e=e||0;p=e>>>3;q=-1===c?3:0;for(l=0;l<a.length;l+=1)h=a.charCodeAt(l),m=l+p,f=m>>>2,b.length<=f&&b.push(0),b[f]|=h<<8*(q+m%4*c);return{value:b,binLen:8*a.length+e}};break;case "ARRAYBUFFER":try{b=new ArrayBuffer(0)}catch(g){throw Error("ARRAYBUFFER not supported by this environment");}b=
-function(a,b,e){var h,l,p,f,m;b=b||[0];e=e||0;l=e>>>3;m=-1===c?3:0;for(h=0;h<a.byteLength;h+=1)f=h+l,p=f>>>2,b.length<=p&&b.push(0),b[p]|=a[h]<<8*(m+f%4*c);return{value:b,binLen:8*a.byteLength+e}};break;default:throw Error("format must be HEX, TEXT, B64, BYTES, or ARRAYBUFFER");}return b}function y(b,a){return b<<a|b>>>32-a}function S(b,a){return 32<a?(a-=32,new c(b.b<<a|b.a>>>32-a,b.a<<a|b.b>>>32-a)):0!==a?new c(b.a<<a|b.b>>>32-a,b.b<<a|b.a>>>32-a):b}function w(b,a){return b>>>a|b<<32-a}function t(b,
-a){var k=null,k=new c(b.a,b.b);return k=32>=a?new c(k.a>>>a|k.b<<32-a&4294967295,k.b>>>a|k.a<<32-a&4294967295):new c(k.b>>>a-32|k.a<<64-a&4294967295,k.a>>>a-32|k.b<<64-a&4294967295)}function T(b,a){var k=null;return k=32>=a?new c(b.a>>>a,b.b>>>a|b.a<<32-a&4294967295):new c(0,b.a>>>a-32)}function aa(b,a,c){return b&a^~b&c}function ba(b,a,k){return new c(b.a&a.a^~b.a&k.a,b.b&a.b^~b.b&k.b)}function U(b,a,c){return b&a^b&c^a&c}function ca(b,a,k){return new c(b.a&a.a^b.a&k.a^a.a&k.a,b.b&a.b^b.b&k.b^a.b&
-k.b)}function da(b){return w(b,2)^w(b,13)^w(b,22)}function ea(b){var a=t(b,28),k=t(b,34);b=t(b,39);return new c(a.a^k.a^b.a,a.b^k.b^b.b)}function fa(b){return w(b,6)^w(b,11)^w(b,25)}function ga(b){var a=t(b,14),k=t(b,18);b=t(b,41);return new c(a.a^k.a^b.a,a.b^k.b^b.b)}function ha(b){return w(b,7)^w(b,18)^b>>>3}function ia(b){var a=t(b,1),k=t(b,8);b=T(b,7);return new c(a.a^k.a^b.a,a.b^k.b^b.b)}function ja(b){return w(b,17)^w(b,19)^b>>>10}function ka(b){var a=t(b,19),k=t(b,61);b=T(b,6);return new c(a.a^
-k.a^b.a,a.b^k.b^b.b)}function G(b,a){var c=(b&65535)+(a&65535);return((b>>>16)+(a>>>16)+(c>>>16)&65535)<<16|c&65535}function la(b,a,c,g){var d=(b&65535)+(a&65535)+(c&65535)+(g&65535);return((b>>>16)+(a>>>16)+(c>>>16)+(g>>>16)+(d>>>16)&65535)<<16|d&65535}function H(b,a,c,g,d){var e=(b&65535)+(a&65535)+(c&65535)+(g&65535)+(d&65535);return((b>>>16)+(a>>>16)+(c>>>16)+(g>>>16)+(d>>>16)+(e>>>16)&65535)<<16|e&65535}function ma(b,a){var e,g,d;e=(b.b&65535)+(a.b&65535);g=(b.b>>>16)+(a.b>>>16)+(e>>>16);d=(g&
-65535)<<16|e&65535;e=(b.a&65535)+(a.a&65535)+(g>>>16);g=(b.a>>>16)+(a.a>>>16)+(e>>>16);return new c((g&65535)<<16|e&65535,d)}function na(b,a,e,g){var d,n,h;d=(b.b&65535)+(a.b&65535)+(e.b&65535)+(g.b&65535);n=(b.b>>>16)+(a.b>>>16)+(e.b>>>16)+(g.b>>>16)+(d>>>16);h=(n&65535)<<16|d&65535;d=(b.a&65535)+(a.a&65535)+(e.a&65535)+(g.a&65535)+(n>>>16);n=(b.a>>>16)+(a.a>>>16)+(e.a>>>16)+(g.a>>>16)+(d>>>16);return new c((n&65535)<<16|d&65535,h)}function oa(b,a,e,g,d){var n,h,l;n=(b.b&65535)+(a.b&65535)+(e.b&
-65535)+(g.b&65535)+(d.b&65535);h=(b.b>>>16)+(a.b>>>16)+(e.b>>>16)+(g.b>>>16)+(d.b>>>16)+(n>>>16);l=(h&65535)<<16|n&65535;n=(b.a&65535)+(a.a&65535)+(e.a&65535)+(g.a&65535)+(d.a&65535)+(h>>>16);h=(b.a>>>16)+(a.a>>>16)+(e.a>>>16)+(g.a>>>16)+(d.a>>>16)+(n>>>16);return new c((h&65535)<<16|n&65535,l)}function z(b){var a=0,e=0,g;for(g=0;g<arguments.length;g+=1)a^=arguments[g].b,e^=arguments[g].a;return new c(e,a)}function B(b){var a=[],e;if("SHA-1"===b)a=[1732584193,4023233417,2562383102,271733878,3285377520];
-else if(0===b.lastIndexOf("SHA-",0))switch(a=[3238371032,914150663,812702999,4144912697,4290775857,1750603025,1694076839,3204075428],e=[1779033703,3144134277,1013904242,2773480762,1359893119,2600822924,528734635,1541459225],b){case "SHA-224":break;case "SHA-256":a=e;break;case "SHA-384":a=[new c(3418070365,a[0]),new c(1654270250,a[1]),new c(2438529370,a[2]),new c(355462360,a[3]),new c(1731405415,a[4]),new c(41048885895,a[5]),new c(3675008525,a[6]),new c(1203062813,a[7])];break;case "SHA-512":a=[new c(e[0],
-4089235720),new c(e[1],2227873595),new c(e[2],4271175723),new c(e[3],1595750129),new c(e[4],2917565137),new c(e[5],725511199),new c(e[6],4215389547),new c(e[7],327033209)];break;default:throw Error("Unknown SHA variant");}else if(0===b.lastIndexOf("SHA3-",0)||0===b.lastIndexOf("SHAKE",0))for(b=0;5>b;b+=1)a[b]=[new c(0,0),new c(0,0),new c(0,0),new c(0,0),new c(0,0)];else throw Error("No SHA variants supported");return a}function K(b,a){var c=[],e,d,n,h,l,p,f;e=a[0];d=a[1];n=a[2];h=a[3];l=a[4];for(f=
-0;80>f;f+=1)c[f]=16>f?b[f]:y(c[f-3]^c[f-8]^c[f-14]^c[f-16],1),p=20>f?H(y(e,5),d&n^~d&h,l,1518500249,c[f]):40>f?H(y(e,5),d^n^h,l,1859775393,c[f]):60>f?H(y(e,5),U(d,n,h),l,2400959708,c[f]):H(y(e,5),d^n^h,l,3395469782,c[f]),l=h,h=n,n=y(d,30),d=e,e=p;a[0]=G(e,a[0]);a[1]=G(d,a[1]);a[2]=G(n,a[2]);a[3]=G(h,a[3]);a[4]=G(l,a[4]);return a}function Z(b,a,c,e){var d;for(d=(a+65>>>9<<4)+15;b.length<=d;)b.push(0);b[a>>>5]|=128<<24-a%32;a+=c;b[d]=a&4294967295;b[d-1]=a/4294967296|0;a=b.length;for(d=0;d<a;d+=16)e=
-K(b.slice(d,d+16),e);return e}function L(b,a,k){var g,d,n,h,l,p,f,m,q,u,r,t,v,w,y,z,A,x,F,B,C,D,E=[],J;if("SHA-224"===k||"SHA-256"===k)u=64,t=1,D=Number,v=G,w=la,y=H,z=ha,A=ja,x=da,F=fa,C=U,B=aa,J=e;else if("SHA-384"===k||"SHA-512"===k)u=80,t=2,D=c,v=ma,w=na,y=oa,z=ia,A=ka,x=ea,F=ga,C=ca,B=ba,J=V;else throw Error("Unexpected error in SHA-2 implementation");k=a[0];g=a[1];d=a[2];n=a[3];h=a[4];l=a[5];p=a[6];f=a[7];for(r=0;r<u;r+=1)16>r?(q=r*t,m=b.length<=q?0:b[q],q=b.length<=q+1?0:b[q+1],E[r]=new D(m,
-q)):E[r]=w(A(E[r-2]),E[r-7],z(E[r-15]),E[r-16]),m=y(f,F(h),B(h,l,p),J[r],E[r]),q=v(x(k),C(k,g,d)),f=p,p=l,l=h,h=v(n,m),n=d,d=g,g=k,k=v(m,q);a[0]=v(k,a[0]);a[1]=v(g,a[1]);a[2]=v(d,a[2]);a[3]=v(n,a[3]);a[4]=v(h,a[4]);a[5]=v(l,a[5]);a[6]=v(p,a[6]);a[7]=v(f,a[7]);return a}function D(b,a){var e,g,d,n,h=[],l=[];if(null!==b)for(g=0;g<b.length;g+=2)a[(g>>>1)%5][(g>>>1)/5|0]=z(a[(g>>>1)%5][(g>>>1)/5|0],new c(b[g+1],b[g]));for(e=0;24>e;e+=1){n=B("SHA3-");for(g=0;5>g;g+=1)h[g]=z(a[g][0],a[g][1],a[g][2],a[g][3],
-a[g][4]);for(g=0;5>g;g+=1)l[g]=z(h[(g+4)%5],S(h[(g+1)%5],1));for(g=0;5>g;g+=1)for(d=0;5>d;d+=1)a[g][d]=z(a[g][d],l[g]);for(g=0;5>g;g+=1)for(d=0;5>d;d+=1)n[d][(2*g+3*d)%5]=S(a[g][d],W[g][d]);for(g=0;5>g;g+=1)for(d=0;5>d;d+=1)a[g][d]=z(n[g][d],new c(~n[(g+1)%5][d].a&n[(g+2)%5][d].a,~n[(g+1)%5][d].b&n[(g+2)%5][d].b));a[0][0]=z(a[0][0],X[e])}return a}var e,V,W,X;e=[1116352408,1899447441,3049323471,3921009573,961987163,1508970993,2453635748,2870763221,3624381080,310598401,607225278,1426881987,1925078388,
-2162078206,2614888103,3248222580,3835390401,4022224774,264347078,604807628,770255983,1249150122,1555081692,1996064986,2554220882,2821834349,2952996808,3210313671,3336571891,3584528711,113926993,338241895,666307205,773529912,1294757372,1396182291,1695183700,1986661051,2177026350,2456956037,2730485921,2820302411,3259730800,3345764771,3516065817,3600352804,4094571909,275423344,430227734,506948616,659060556,883997877,958139571,1322822218,1537002063,1747873779,1955562222,2024104815,2227730452,2361852424,
-2428436474,2756734187,3204031479,3329325298];V=[new c(e[0],3609767458),new c(e[1],602891725),new c(e[2],3964484399),new c(e[3],2173295548),new c(e[4],4081628472),new c(e[5],3053834265),new c(e[6],2937671579),new c(e[7],3664609560),new c(e[8],2734883394),new c(e[9],1164996542),new c(e[10],1323610764),new c(e[11],3590304994),new c(e[12],4068182383),new c(e[13],991336113),new c(e[14],633803317),new c(e[15],3479774868),new c(e[16],2666613458),new c(e[17],944711139),new c(e[18],2341262773),new c(e[19],
-2007800933),new c(e[20],1495990901),new c(e[21],1856431235),new c(e[22],3175218132),new c(e[23],2198950837),new c(e[24],3999719339),new c(e[25],766784016),new c(e[26],2566594879),new c(e[27],3203337956),new c(e[28],1034457026),new c(e[29],2466948901),new c(e[30],3758326383),new c(e[31],168717936),new c(e[32],1188179964),new c(e[33],1546045734),new c(e[34],1522805485),new c(e[35],2643833823),new c(e[36],2343527390),new c(e[37],1014477480),new c(e[38],1206759142),new c(e[39],344077627),new c(e[40],
-1290863460),new c(e[41],3158454273),new c(e[42],3505952657),new c(e[43],106217008),new c(e[44],3606008344),new c(e[45],1432725776),new c(e[46],1467031594),new c(e[47],851169720),new c(e[48],3100823752),new c(e[49],1363258195),new c(e[50],3750685593),new c(e[51],3785050280),new c(e[52],3318307427),new c(e[53],3812723403),new c(e[54],2003034995),new c(e[55],3602036899),new c(e[56],1575990012),new c(e[57],1125592928),new c(e[58],2716904306),new c(e[59],442776044),new c(e[60],593698344),new c(e[61],3733110249),
-new c(e[62],2999351573),new c(e[63],3815920427),new c(3391569614,3928383900),new c(3515267271,566280711),new c(3940187606,3454069534),new c(4118630271,4000239992),new c(116418474,1914138554),new c(174292421,2731055270),new c(289380356,3203993006),new c(460393269,320620315),new c(685471733,587496836),new c(852142971,1086792851),new c(1017036298,365543100),new c(1126000580,2618297676),new c(1288033470,3409855158),new c(1501505948,4234509866),new c(1607167915,987167468),new c(1816402316,1246189591)];
-X=[new c(0,1),new c(0,32898),new c(2147483648,32906),new c(2147483648,2147516416),new c(0,32907),new c(0,2147483649),new c(2147483648,2147516545),new c(2147483648,32777),new c(0,138),new c(0,136),new c(0,2147516425),new c(0,2147483658),new c(0,2147516555),new c(2147483648,139),new c(2147483648,32905),new c(2147483648,32771),new c(2147483648,32770),new c(2147483648,128),new c(0,32778),new c(2147483648,2147483658),new c(2147483648,2147516545),new c(2147483648,32896),new c(0,2147483649),new c(2147483648,
-2147516424)];W=[[0,36,3,41,18],[1,44,10,45,2],[62,6,43,15,61],[28,55,25,21,56],[27,20,39,8,14]];"function"===typeof define&&define.amd?define(function(){return C}):"undefined"!==typeof exports?("undefined"!==typeof module&&module.exports&&(module.exports=C),exports=C):Y.jsSHA=C})(this);
+/**
+ * @preserve A JavaScript implementation of the SHA family of hashes, as
+ * defined in FIPS PUB 180-2 as well as the corresponding HMAC implementation
+ * as defined in FIPS PUB 198a
+ *
+ * Copyright Brian Turek 2008-2015
+ * Distributed under the BSD License
+ * See http://caligatio.github.com/jsSHA/ for more information
+ *
+ * Several functions taken from Paul Johnston
+ */
+
+ /**
+  * SUPPORTED_ALGS is the stub for a compile flag that will cause pruning of
+  * functions that are not needed when a limited number of SHA families are
+  * selected
+  *
+  * @define {number} ORed value of SHA variants to be supported
+  *   1 = SHA-1, 2 = SHA-224/SHA-256, 4 = SHA-384/SHA-512
+  */
+var SUPPORTED_ALGS = 4 | 2 | 1;
+
+(function (global)
+{
+	"use strict";
+	/**
+	 * Int_64 is a object for 2 32-bit numbers emulating a 64-bit number
+	 *
+	 * @private
+	 * @constructor
+	 * @this {Int_64}
+	 * @param {number} msint_32 The most significant 32-bits of a 64-bit number
+	 * @param {number} lsint_32 The least significant 32-bits of a 64-bit number
+	 */
+	function Int_64(msint_32, lsint_32)
+	{
+		this.highOrder = msint_32;
+		this.lowOrder = lsint_32;
+	}
+
+	/**
+	 * Convert a string to an array of big-endian words
+	 *
+	 * @private
+	 * @param {string} str String to be converted to binary representation
+	 * @param {string} utfType The Unicode type, UTF8 or UTF16BE, UTF16LE, to
+	 *   use to encode the source string
+	 * @return {{value : Array.<number>, binLen : number}} Hash list where
+	 *   "value" contains the output number array and "binLen" is the binary
+	 *   length of "value"
+	 */
+	function str2binb(str, utfType)
+	{
+		var bin = [], codePnt, binArr = [], byteCnt = 0, i, j, offset;
+
+		if ("UTF8" === utfType)
+		{
+			for (i = 0; i < str.length; i += 1)
+			{
+				codePnt = str.charCodeAt(i);
+				binArr = [];
+
+				if (0x80 > codePnt)
+				{
+					binArr.push(codePnt);
+				}
+				else if (0x800 > codePnt)
+				{
+					binArr.push(0xC0 | (codePnt >>> 6));
+					binArr.push(0x80 | (codePnt & 0x3F));
+				}
+				else if ((0xd800 > codePnt) || (0xe000 <= codePnt)) {
+					binArr.push(
+						0xe0 | (codePnt >>> 12),
+						0x80 | ((codePnt >>> 6) & 0x3f),
+						0x80 | (codePnt & 0x3f)
+					);
+				}
+				else
+				{
+					i += 1;
+					codePnt = 0x10000 + (((codePnt & 0x3ff) << 10) | (str.charCodeAt(i) & 0x3ff));
+					binArr.push(
+						0xf0 | (codePnt >>> 18),
+						0x80 | ((codePnt >>> 12) & 0x3f),
+						0x80 | ((codePnt >>> 6) & 0x3f),
+						0x80 | (codePnt & 0x3f)
+					);
+				}
+
+				for (j = 0; j < binArr.length; j += 1)
+				{
+					offset = byteCnt >>> 2;
+					while (bin.length <= offset)
+					{
+						bin.push(0);
+					}
+					bin[offset] |= binArr[j] << (24 - (8 * (byteCnt % 4)));
+					byteCnt += 1;
+				}
+			}
+		}
+		else if (("UTF16BE" === utfType) || "UTF16LE" === utfType)
+		{
+			for (i = 0; i < str.length; i += 1)
+			{
+				codePnt = str.charCodeAt(i);
+				/* Internally strings are UTF-16BE so only change if UTF-16LE */
+				if ("UTF16LE" === utfType)
+				{
+					j = codePnt & 0xFF;
+					codePnt = (j << 8) | (codePnt >> 8);
+				}
+
+				offset = byteCnt >>> 2;
+				while (bin.length <= offset)
+				{
+					bin.push(0);
+				}
+				bin[offset] |= codePnt << (16 - (8 * (byteCnt % 4)));
+				byteCnt += 2;
+			}
+		}
+		return {"value" : bin, "binLen" : byteCnt * 8};
+	}
+
+	/**
+	 * Convert a hex string to an array of big-endian words
+	 *
+	 * @private
+	 * @param {string} str String to be converted to binary representation
+	 * @return {{value : Array.<number>, binLen : number}} Hash list where
+	 *   "value" contains the output number array and "binLen" is the binary
+	 *   length of "value"
+	 */
+	function hex2binb(str)
+	{
+		var bin = [], length = str.length, i, num, offset;
+
+		if (0 !== (length % 2))
+		{
+			throw "String of HEX type must be in byte increments";
+		}
+
+		for (i = 0; i < length; i += 2)
+		{
+			num = parseInt(str.substr(i, 2), 16);
+			if (!isNaN(num))
+			{
+				offset = i >>> 3;
+				while (bin.length <= offset)
+				{
+					bin.push(0);
+				}
+				bin[i >>> 3] |= num << (24 - (4 * (i % 8)));
+			}
+			else
+			{
+				throw "String of HEX type contains invalid characters";
+			}
+		}
+
+		return {"value" : bin, "binLen" : length * 4};
+	}
+
+		/**
+	 * Convert a string of raw bytes to an array of big-endian words
+	 *
+	 * @private
+	 * @param {string} str String of raw bytes to be converted to binary representation
+	 * @return {{value : Array.<number>, binLen : number}} Hash list where
+	 *   "value" contains the output number array and "binLen" is the binary
+	 *   length of "value"
+	 */
+	function bytes2binb(str)
+	{
+		var bin = [], codePnt, i, offset;
+
+		for (i = 0; i < str.length; i += 1)
+		{
+			codePnt = str.charCodeAt(i);
+
+			offset = i >>> 2;
+			if (bin.length <= offset)
+			{
+				bin.push(0);
+			}
+			bin[offset] |= codePnt << (24 - (8 * (i % 4)));
+		}
+
+		return {"value" : bin, "binLen" : str.length * 8};
+	}
+
+	/**
+	 * Convert a base-64 string to an array of big-endian words
+	 *
+	 * @private
+	 * @param {string} str String to be converted to binary representation
+	 * @return {{value : Array.<number>, binLen : number}} Hash list where
+	 *   "value" contains the output number array and "binLen" is the binary
+	 *   length of "value"
+	 */
+	function b642binb(str)
+	{
+		var retVal = [], byteCnt = 0, index, i, j, tmpInt, strPart, firstEqual, offset,
+			b64Tab = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+		if (-1 === str.search(/^[a-zA-Z0-9=+\/]+$/))
+		{
+			throw "Invalid character in base-64 string";
+		}
+		firstEqual = str.indexOf('=');
+		str = str.replace(/\=/g, '');
+		if ((-1 !== firstEqual) && (firstEqual < str.length))
+		{
+			throw "Invalid '=' found in base-64 string";
+		}
+
+		for (i = 0; i < str.length; i += 4)
+		{
+			strPart = str.substr(i, 4);
+			tmpInt = 0;
+
+			for (j = 0; j < strPart.length; j += 1)
+			{
+				index = b64Tab.indexOf(strPart[j]);
+				tmpInt |= index << (18 - (6 * j));
+			}
+
+			for (j = 0; j < strPart.length - 1; j += 1)
+			{
+				offset = byteCnt >>> 2;
+				while (retVal.length <= offset)
+				{
+					retVal.push(0);
+				}
+				retVal[offset] |= ((tmpInt >>> (16 - (j * 8))) & 0xFF) <<
+					(24 - (8 * (byteCnt % 4)));
+				byteCnt += 1;
+			}
+		}
+
+		return {"value" : retVal, "binLen" : byteCnt * 8};
+	}
+
+	/**
+	 * Convert an array of big-endian words to a hex string.
+	 *
+	 * @private
+	 * @param {Array.<number>} binarray Array of integers to be converted to
+	 *   hexidecimal representation
+	 * @param {{outputUpper : boolean, b64Pad : string}} formatOpts Hash list
+	 *   containing validated output formatting options
+	 * @return {string} Hexidecimal representation of the parameter in string
+	 *   form
+	 */
+	function binb2hex(binarray, formatOpts)
+	{
+		var hex_tab = "0123456789abcdef", str = "",
+			length = binarray.length * 4, i, srcByte;
+
+		for (i = 0; i < length; i += 1)
+		{
+			/* The below is more than a byte but it gets taken care of later */
+			srcByte = binarray[i >>> 2] >>> ((3 - (i % 4)) * 8);
+			str += hex_tab.charAt((srcByte >>> 4) & 0xF) +
+				hex_tab.charAt(srcByte & 0xF);
+		}
+
+		return (formatOpts["outputUpper"]) ? str.toUpperCase() : str;
+	}
+
+	/**
+	 * Convert an array of big-endian words to a base-64 string
+	 *
+	 * @private
+	 * @param {Array.<number>} binarray Array of integers to be converted to
+	 *   base-64 representation
+	 * @param {{outputUpper : boolean, b64Pad : string}} formatOpts Hash list
+	 *   containing validated output formatting options
+	 * @return {string} Base-64 encoded representation of the parameter in
+	 *   string form
+	 */
+	function binb2b64(binarray, formatOpts)
+	{
+		var str = "", length = binarray.length * 4, i, j, triplet, offset, int1, int2,
+			b64Tab = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+		for (i = 0; i < length; i += 3)
+		{
+			offset = (i + 1) >>> 2;
+			int1 = (binarray.length <= offset) ? 0 : binarray[offset];
+			offset = (i + 2) >>> 2;
+			int2 = (binarray.length <= offset) ? 0 : binarray[offset];
+			triplet = (((binarray[i >>> 2] >>> 8 * (3 - i % 4)) & 0xFF) << 16) |
+				(((int1 >>> 8 * (3 - (i + 1) % 4)) & 0xFF) << 8) |
+				((int2 >>> 8 * (3 - (i + 2) % 4)) & 0xFF);
+			for (j = 0; j < 4; j += 1)
+			{
+				if (i * 8 + j * 6 <= binarray.length * 32)
+				{
+					str += b64Tab.charAt((triplet >>> 6 * (3 - j)) & 0x3F);
+				}
+				else
+				{
+					str += formatOpts["b64Pad"];
+				}
+			}
+		}
+		return str;
+	}
+
+	/**
+	 * Convert an array of big-endian words to raw bytes string
+	 *
+	 * @private
+	 * @param {Array.<number>} binarray Array of integers to be converted to
+	 *   a raw bytes string representation
+	 * @param {!Object} formatOpts Unused Hash list
+	 * @return {string} Raw bytes representation of the parameter in string
+	 *   form
+	 */
+	function binb2bytes(binarray, formatOpts)
+	{
+		var str = "", length = binarray.length * 4, i, srcByte;
+
+		for (i = 0; i < length; i += 1)
+		{
+			srcByte = (binarray[i >>> 2] >>> ((3 - (i % 4)) * 8)) & 0xFF;
+			str += String.fromCharCode(srcByte);
+		}
+
+		return str;
+	}
+
+	/**
+	 * Validate hash list containing output formatting options, ensuring
+	 * presence of every option or adding the default value
+	 *
+	 * @private
+	 * @param {{outputUpper : boolean, b64Pad : string}|undefined} outputOpts
+	 *   Hash list of output formatting options
+	 * @return {{outputUpper : boolean, b64Pad : string}} Validated hash list
+	 *   containing output formatting options
+	 */
+	function getOutputOpts(outputOpts)
+	{
+		var retVal = {"outputUpper" : false, "b64Pad" : "="};
+
+		try
+		{
+			if (outputOpts.hasOwnProperty("outputUpper"))
+			{
+				retVal["outputUpper"] = outputOpts["outputUpper"];
+			}
+
+			if (outputOpts.hasOwnProperty("b64Pad"))
+			{
+				retVal["b64Pad"] = outputOpts["b64Pad"];
+			}
+		}
+		catch(ignore)
+		{}
+
+		if ("boolean" !== typeof(retVal["outputUpper"]))
+		{
+			throw "Invalid outputUpper formatting option";
+		}
+
+		if ("string" !== typeof(retVal["b64Pad"]))
+		{
+			throw "Invalid b64Pad formatting option";
+		}
+
+		return retVal;
+	}
+
+	/**
+	 * The 32-bit implementation of circular rotate left
+	 *
+	 * @private
+	 * @param {number} x The 32-bit integer argument
+	 * @param {number} n The number of bits to shift
+	 * @return {number} The x shifted circularly by n bits
+	 */
+	function rotl_32(x, n)
+	{
+		return (x << n) | (x >>> (32 - n));
+	}
+
+	/**
+	 * The 32-bit implementation of circular rotate right
+	 *
+	 * @private
+	 * @param {number} x The 32-bit integer argument
+	 * @param {number} n The number of bits to shift
+	 * @return {number} The x shifted circularly by n bits
+	 */
+	function rotr_32(x, n)
+	{
+		return (x >>> n) | (x << (32 - n));
+	}
+
+	/**
+	 * The 64-bit implementation of circular rotate right
+	 *
+	 * @private
+	 * @param {Int_64} x The 64-bit integer argument
+	 * @param {number} n The number of bits to shift
+	 * @return {Int_64} The x shifted circularly by n bits
+	 */
+	function rotr_64(x, n)
+	{
+		var retVal = null, tmp = new Int_64(x.highOrder, x.lowOrder);
+
+		if (32 >= n)
+		{
+			retVal = new Int_64(
+					(tmp.highOrder >>> n) | ((tmp.lowOrder << (32 - n)) & 0xFFFFFFFF),
+					(tmp.lowOrder >>> n) | ((tmp.highOrder << (32 - n)) & 0xFFFFFFFF)
+				);
+		}
+		else
+		{
+			retVal = new Int_64(
+					(tmp.lowOrder >>> (n - 32)) | ((tmp.highOrder << (64 - n)) & 0xFFFFFFFF),
+					(tmp.highOrder >>> (n - 32)) | ((tmp.lowOrder << (64 - n)) & 0xFFFFFFFF)
+				);
+		}
+
+		return retVal;
+	}
+
+	/**
+	 * The 32-bit implementation of shift right
+	 *
+	 * @private
+	 * @param {number} x The 32-bit integer argument
+	 * @param {number} n The number of bits to shift
+	 * @return {number} The x shifted by n bits
+	 */
+	function shr_32(x, n)
+	{
+		return x >>> n;
+	}
+
+	/**
+	 * The 64-bit implementation of shift right
+	 *
+	 * @private
+	 * @param {Int_64} x The 64-bit integer argument
+	 * @param {number} n The number of bits to shift
+	 * @return {Int_64} The x shifted by n bits
+	 */
+	function shr_64(x, n)
+	{
+		var retVal = null;
+
+		if (32 >= n)
+		{
+			retVal = new Int_64(
+					x.highOrder >>> n,
+					x.lowOrder >>> n | ((x.highOrder << (32 - n)) & 0xFFFFFFFF)
+				);
+		}
+		else
+		{
+			retVal = new Int_64(
+					0,
+					x.highOrder >>> (n - 32)
+				);
+		}
+
+		return retVal;
+	}
+
+	/**
+	 * The 32-bit implementation of the NIST specified Parity function
+	 *
+	 * @private
+	 * @param {number} x The first 32-bit integer argument
+	 * @param {number} y The second 32-bit integer argument
+	 * @param {number} z The third 32-bit integer argument
+	 * @return {number} The NIST specified output of the function
+	 */
+	function parity_32(x, y, z)
+	{
+		return x ^ y ^ z;
+	}
+
+	/**
+	 * The 32-bit implementation of the NIST specified Ch function
+	 *
+	 * @private
+	 * @param {number} x The first 32-bit integer argument
+	 * @param {number} y The second 32-bit integer argument
+	 * @param {number} z The third 32-bit integer argument
+	 * @return {number} The NIST specified output of the function
+	 */
+	function ch_32(x, y, z)
+	{
+		return (x & y) ^ (~x & z);
+	}
+
+	/**
+	 * The 64-bit implementation of the NIST specified Ch function
+	 *
+	 * @private
+	 * @param {Int_64} x The first 64-bit integer argument
+	 * @param {Int_64} y The second 64-bit integer argument
+	 * @param {Int_64} z The third 64-bit integer argument
+	 * @return {Int_64} The NIST specified output of the function
+	 */
+	function ch_64(x, y, z)
+	{
+		return new Int_64(
+				(x.highOrder & y.highOrder) ^ (~x.highOrder & z.highOrder),
+				(x.lowOrder & y.lowOrder) ^ (~x.lowOrder & z.lowOrder)
+			);
+	}
+
+	/**
+	 * The 32-bit implementation of the NIST specified Maj function
+	 *
+	 * @private
+	 * @param {number} x The first 32-bit integer argument
+	 * @param {number} y The second 32-bit integer argument
+	 * @param {number} z The third 32-bit integer argument
+	 * @return {number} The NIST specified output of the function
+	 */
+	function maj_32(x, y, z)
+	{
+		return (x & y) ^ (x & z) ^ (y & z);
+	}
+
+	/**
+	 * The 64-bit implementation of the NIST specified Maj function
+	 *
+	 * @private
+	 * @param {Int_64} x The first 64-bit integer argument
+	 * @param {Int_64} y The second 64-bit integer argument
+	 * @param {Int_64} z The third 64-bit integer argument
+	 * @return {Int_64} The NIST specified output of the function
+	 */
+	function maj_64(x, y, z)
+	{
+		return new Int_64(
+				(x.highOrder & y.highOrder) ^
+				(x.highOrder & z.highOrder) ^
+				(y.highOrder & z.highOrder),
+				(x.lowOrder & y.lowOrder) ^
+				(x.lowOrder & z.lowOrder) ^
+				(y.lowOrder & z.lowOrder)
+			);
+	}
+
+	/**
+	 * The 32-bit implementation of the NIST specified Sigma0 function
+	 *
+	 * @private
+	 * @param {number} x The 32-bit integer argument
+	 * @return {number} The NIST specified output of the function
+	 */
+	function sigma0_32(x)
+	{
+		return rotr_32(x, 2) ^ rotr_32(x, 13) ^ rotr_32(x, 22);
+	}
+
+	/**
+	 * The 64-bit implementation of the NIST specified Sigma0 function
+	 *
+	 * @private
+	 * @param {Int_64} x The 64-bit integer argument
+	 * @return {Int_64} The NIST specified output of the function
+	 */
+	function sigma0_64(x)
+	{
+		var rotr28 = rotr_64(x, 28), rotr34 = rotr_64(x, 34),
+			rotr39 = rotr_64(x, 39);
+
+		return new Int_64(
+				rotr28.highOrder ^ rotr34.highOrder ^ rotr39.highOrder,
+				rotr28.lowOrder ^ rotr34.lowOrder ^ rotr39.lowOrder);
+	}
+
+	/**
+	 * The 32-bit implementation of the NIST specified Sigma1 function
+	 *
+	 * @private
+	 * @param {number} x The 32-bit integer argument
+	 * @return {number} The NIST specified output of the function
+	 */
+	function sigma1_32(x)
+	{
+		return rotr_32(x, 6) ^ rotr_32(x, 11) ^ rotr_32(x, 25);
+	}
+
+	/**
+	 * The 64-bit implementation of the NIST specified Sigma1 function
+	 *
+	 * @private
+	 * @param {Int_64} x The 64-bit integer argument
+	 * @return {Int_64} The NIST specified output of the function
+	 */
+	function sigma1_64(x)
+	{
+		var rotr14 = rotr_64(x, 14), rotr18 = rotr_64(x, 18),
+			rotr41 = rotr_64(x, 41);
+
+		return new Int_64(
+				rotr14.highOrder ^ rotr18.highOrder ^ rotr41.highOrder,
+				rotr14.lowOrder ^ rotr18.lowOrder ^ rotr41.lowOrder);
+	}
+
+	/**
+	 * The 32-bit implementation of the NIST specified Gamma0 function
+	 *
+	 * @private
+	 * @param {number} x The 32-bit integer argument
+	 * @return {number} The NIST specified output of the function
+	 */
+	function gamma0_32(x)
+	{
+		return rotr_32(x, 7) ^ rotr_32(x, 18) ^ shr_32(x, 3);
+	}
+
+	/**
+	 * The 64-bit implementation of the NIST specified Gamma0 function
+	 *
+	 * @private
+	 * @param {Int_64} x The 64-bit integer argument
+	 * @return {Int_64} The NIST specified output of the function
+	 */
+	function gamma0_64(x)
+	{
+		var rotr1 = rotr_64(x, 1), rotr8 = rotr_64(x, 8), shr7 = shr_64(x, 7);
+
+		return new Int_64(
+				rotr1.highOrder ^ rotr8.highOrder ^ shr7.highOrder,
+				rotr1.lowOrder ^ rotr8.lowOrder ^ shr7.lowOrder
+			);
+	}
+
+	/**
+	 * The 32-bit implementation of the NIST specified Gamma1 function
+	 *
+	 * @private
+	 * @param {number} x The 32-bit integer argument
+	 * @return {number} The NIST specified output of the function
+	 */
+	function gamma1_32(x)
+	{
+		return rotr_32(x, 17) ^ rotr_32(x, 19) ^ shr_32(x, 10);
+	}
+
+	/**
+	 * The 64-bit implementation of the NIST specified Gamma1 function
+	 *
+	 * @private
+	 * @param {Int_64} x The 64-bit integer argument
+	 * @return {Int_64} The NIST specified output of the function
+	 */
+	function gamma1_64(x)
+	{
+		var rotr19 = rotr_64(x, 19), rotr61 = rotr_64(x, 61),
+			shr6 = shr_64(x, 6);
+
+		return new Int_64(
+				rotr19.highOrder ^ rotr61.highOrder ^ shr6.highOrder,
+				rotr19.lowOrder ^ rotr61.lowOrder ^ shr6.lowOrder
+			);
+	}
+
+	/**
+	 * Add two 32-bit integers, wrapping at 2^32. This uses 16-bit operations
+	 * internally to work around bugs in some JS interpreters.
+	 *
+	 * @private
+	 * @param {number} a The first 32-bit integer argument to be added
+	 * @param {number} b The second 32-bit integer argument to be added
+	 * @return {number} The sum of a + b
+	 */
+	function safeAdd_32_2(a, b)
+	{
+		var lsw = (a & 0xFFFF) + (b & 0xFFFF),
+			msw = (a >>> 16) + (b >>> 16) + (lsw >>> 16);
+
+		return ((msw & 0xFFFF) << 16) | (lsw & 0xFFFF);
+	}
+
+	/**
+	 * Add four 32-bit integers, wrapping at 2^32. This uses 16-bit operations
+	 * internally to work around bugs in some JS interpreters.
+	 *
+	 * @private
+	 * @param {number} a The first 32-bit integer argument to be added
+	 * @param {number} b The second 32-bit integer argument to be added
+	 * @param {number} c The third 32-bit integer argument to be added
+	 * @param {number} d The fourth 32-bit integer argument to be added
+	 * @return {number} The sum of a + b + c + d
+	 */
+	function safeAdd_32_4(a, b, c, d)
+	{
+		var lsw = (a & 0xFFFF) + (b & 0xFFFF) + (c & 0xFFFF) + (d & 0xFFFF),
+			msw = (a >>> 16) + (b >>> 16) + (c >>> 16) + (d >>> 16) +
+				(lsw >>> 16);
+
+		return ((msw & 0xFFFF) << 16) | (lsw & 0xFFFF);
+	}
+
+	/**
+	 * Add five 32-bit integers, wrapping at 2^32. This uses 16-bit operations
+	 * internally to work around bugs in some JS interpreters.
+	 *
+	 * @private
+	 * @param {number} a The first 32-bit integer argument to be added
+	 * @param {number} b The second 32-bit integer argument to be added
+	 * @param {number} c The third 32-bit integer argument to be added
+	 * @param {number} d The fourth 32-bit integer argument to be added
+	 * @param {number} e The fifth 32-bit integer argument to be added
+	 * @return {number} The sum of a + b + c + d + e
+	 */
+	function safeAdd_32_5(a, b, c, d, e)
+	{
+		var lsw = (a & 0xFFFF) + (b & 0xFFFF) + (c & 0xFFFF) + (d & 0xFFFF) +
+				(e & 0xFFFF),
+			msw = (a >>> 16) + (b >>> 16) + (c >>> 16) + (d >>> 16) +
+				(e >>> 16) + (lsw >>> 16);
+
+		return ((msw & 0xFFFF) << 16) | (lsw & 0xFFFF);
+	}
+
+	/**
+	 * Add two 64-bit integers, wrapping at 2^64. This uses 16-bit operations
+	 * internally to work around bugs in some JS interpreters.
+	 *
+	 * @private
+	 * @param {Int_64} x The first 64-bit integer argument to be added
+	 * @param {Int_64} y The second 64-bit integer argument to be added
+	 * @return {Int_64} The sum of x + y
+	 */
+	function safeAdd_64_2(x, y)
+	{
+		var lsw, msw, lowOrder, highOrder;
+
+		lsw = (x.lowOrder & 0xFFFF) + (y.lowOrder & 0xFFFF);
+		msw = (x.lowOrder >>> 16) + (y.lowOrder >>> 16) + (lsw >>> 16);
+		lowOrder = ((msw & 0xFFFF) << 16) | (lsw & 0xFFFF);
+
+		lsw = (x.highOrder & 0xFFFF) + (y.highOrder & 0xFFFF) + (msw >>> 16);
+		msw = (x.highOrder >>> 16) + (y.highOrder >>> 16) + (lsw >>> 16);
+		highOrder = ((msw & 0xFFFF) << 16) | (lsw & 0xFFFF);
+
+		return new Int_64(highOrder, lowOrder);
+	}
+
+	/**
+	 * Add four 64-bit integers, wrapping at 2^64. This uses 16-bit operations
+	 * internally to work around bugs in some JS interpreters.
+	 *
+	 * @private
+	 * @param {Int_64} a The first 64-bit integer argument to be added
+	 * @param {Int_64} b The second 64-bit integer argument to be added
+	 * @param {Int_64} c The third 64-bit integer argument to be added
+	 * @param {Int_64} d The fouth 64-bit integer argument to be added
+	 * @return {Int_64} The sum of a + b + c + d
+	 */
+	function safeAdd_64_4(a, b, c, d)
+	{
+		var lsw, msw, lowOrder, highOrder;
+
+		lsw = (a.lowOrder & 0xFFFF) + (b.lowOrder & 0xFFFF) +
+			(c.lowOrder & 0xFFFF) + (d.lowOrder & 0xFFFF);
+		msw = (a.lowOrder >>> 16) + (b.lowOrder >>> 16) +
+			(c.lowOrder >>> 16) + (d.lowOrder >>> 16) + (lsw >>> 16);
+		lowOrder = ((msw & 0xFFFF) << 16) | (lsw & 0xFFFF);
+
+		lsw = (a.highOrder & 0xFFFF) + (b.highOrder & 0xFFFF) +
+			(c.highOrder & 0xFFFF) + (d.highOrder & 0xFFFF) + (msw >>> 16);
+		msw = (a.highOrder >>> 16) + (b.highOrder >>> 16) +
+			(c.highOrder >>> 16) + (d.highOrder >>> 16) + (lsw >>> 16);
+		highOrder = ((msw & 0xFFFF) << 16) | (lsw & 0xFFFF);
+
+		return new Int_64(highOrder, lowOrder);
+	}
+
+	/**
+	 * Add five 64-bit integers, wrapping at 2^64. This uses 16-bit operations
+	 * internally to work around bugs in some JS interpreters.
+	 *
+	 * @private
+	 * @param {Int_64} a The first 64-bit integer argument to be added
+	 * @param {Int_64} b The second 64-bit integer argument to be added
+	 * @param {Int_64} c The third 64-bit integer argument to be added
+	 * @param {Int_64} d The fouth 64-bit integer argument to be added
+	 * @param {Int_64} e The fouth 64-bit integer argument to be added
+	 * @return {Int_64} The sum of a + b + c + d + e
+	 */
+	function safeAdd_64_5(a, b, c, d, e)
+	{
+		var lsw, msw, lowOrder, highOrder;
+
+		lsw = (a.lowOrder & 0xFFFF) + (b.lowOrder & 0xFFFF) +
+			(c.lowOrder & 0xFFFF) + (d.lowOrder & 0xFFFF) +
+			(e.lowOrder & 0xFFFF);
+		msw = (a.lowOrder >>> 16) + (b.lowOrder >>> 16) +
+			(c.lowOrder >>> 16) + (d.lowOrder >>> 16) + (e.lowOrder >>> 16) +
+			(lsw >>> 16);
+		lowOrder = ((msw & 0xFFFF) << 16) | (lsw & 0xFFFF);
+
+		lsw = (a.highOrder & 0xFFFF) + (b.highOrder & 0xFFFF) +
+			(c.highOrder & 0xFFFF) + (d.highOrder & 0xFFFF) +
+			(e.highOrder & 0xFFFF) + (msw >>> 16);
+		msw = (a.highOrder >>> 16) + (b.highOrder >>> 16) +
+			(c.highOrder >>> 16) + (d.highOrder >>> 16) +
+			(e.highOrder >>> 16) + (lsw >>> 16);
+		highOrder = ((msw & 0xFFFF) << 16) | (lsw & 0xFFFF);
+
+		return new Int_64(highOrder, lowOrder);
+	}
+
+	/**
+	 * Calculates the SHA-1 hash of the string set at instantiation
+	 *
+	 * @private
+	 * @param {Array.<number>} message The binary array representation of the
+	 *   string to hash
+	 * @param {number} messageLen The number of bits in the message
+	 * @return {Array.<number>} The array of integers representing the SHA-1
+	 *   hash of message
+	 */
+	function coreSHA1(message, messageLen)
+	{
+		var W = [], a, b, c, d, e, T, ch = ch_32, parity = parity_32,
+			maj = maj_32, rotl = rotl_32, safeAdd_2 = safeAdd_32_2, i, t,
+			safeAdd_5 = safeAdd_32_5, appendedMessageLength, offset,
+			H = [
+				0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476, 0xc3d2e1f0
+			];
+
+		offset = (((messageLen + 65) >>> 9) << 4) + 15;
+		while (message.length <= offset)
+		{
+			message.push(0);
+		}
+		/* Append '1' at the end of the binary string */
+		message[messageLen >>> 5] |= 0x80 << (24 - (messageLen % 32));
+		/* Append length of binary string in the position such that the new
+		length is a multiple of 512.  Logic does not work for even multiples
+		of 512 but there can never be even multiples of 512 */
+		message[offset] = messageLen;
+
+		appendedMessageLength = message.length;
+
+		for (i = 0; i < appendedMessageLength; i += 16)
+		{
+			a = H[0];
+			b = H[1];
+			c = H[2];
+			d = H[3];
+			e = H[4];
+
+			for (t = 0; t < 80; t += 1)
+			{
+				if (t < 16)
+				{
+					W[t] = message[t + i];
+				}
+				else
+				{
+					W[t] = rotl(W[t - 3] ^ W[t - 8] ^ W[t - 14] ^ W[t - 16], 1);
+				}
+
+				if (t < 20)
+				{
+					T = safeAdd_5(rotl(a, 5), ch(b, c, d), e, 0x5a827999, W[t]);
+				}
+				else if (t < 40)
+				{
+					T = safeAdd_5(rotl(a, 5), parity(b, c, d), e, 0x6ed9eba1, W[t]);
+				}
+				else if (t < 60)
+				{
+					T = safeAdd_5(rotl(a, 5), maj(b, c, d), e, 0x8f1bbcdc, W[t]);
+				} else {
+					T = safeAdd_5(rotl(a, 5), parity(b, c, d), e, 0xca62c1d6, W[t]);
+				}
+
+				e = d;
+				d = c;
+				c = rotl(b, 30);
+				b = a;
+				a = T;
+			}
+
+			H[0] = safeAdd_2(a, H[0]);
+			H[1] = safeAdd_2(b, H[1]);
+			H[2] = safeAdd_2(c, H[2]);
+			H[3] = safeAdd_2(d, H[3]);
+			H[4] = safeAdd_2(e, H[4]);
+		}
+
+		return H;
+	}
+
+	/**
+	 * Calculates the desired SHA-2 hash of the string set at instantiation
+	 *
+	 * @private
+	 * @param {Array.<number>} message The binary array representation of the
+	 *   string to hash
+	 * @param {number} messageLen The number of bits in message
+	 * @param {string} variant The desired SHA-2 variant
+	 * @return {Array.<number>} The array of integers representing the SHA-2
+	 *   hash of message
+	 */
+	function coreSHA2(message, messageLen, variant)
+	{
+		var a, b, c, d, e, f, g, h, T1, T2, H, numRounds, lengthPosition, i, t,
+			binaryStringInc, binaryStringMult, safeAdd_2, safeAdd_4, safeAdd_5,
+			gamma0, gamma1, sigma0, sigma1, ch, maj, Int, W = [], int1, int2, offset,
+			appendedMessageLength, retVal,
+			K = [
+				0x428A2F98, 0x71374491, 0xB5C0FBCF, 0xE9B5DBA5,
+				0x3956C25B, 0x59F111F1, 0x923F82A4, 0xAB1C5ED5,
+				0xD807AA98, 0x12835B01, 0x243185BE, 0x550C7DC3,
+				0x72BE5D74, 0x80DEB1FE, 0x9BDC06A7, 0xC19BF174,
+				0xE49B69C1, 0xEFBE4786, 0x0FC19DC6, 0x240CA1CC,
+				0x2DE92C6F, 0x4A7484AA, 0x5CB0A9DC, 0x76F988DA,
+				0x983E5152, 0xA831C66D, 0xB00327C8, 0xBF597FC7,
+				0xC6E00BF3, 0xD5A79147, 0x06CA6351, 0x14292967,
+				0x27B70A85, 0x2E1B2138, 0x4D2C6DFC, 0x53380D13,
+				0x650A7354, 0x766A0ABB, 0x81C2C92E, 0x92722C85,
+				0xA2BFE8A1, 0xA81A664B, 0xC24B8B70, 0xC76C51A3,
+				0xD192E819, 0xD6990624, 0xF40E3585, 0x106AA070,
+				0x19A4C116, 0x1E376C08, 0x2748774C, 0x34B0BCB5,
+				0x391C0CB3, 0x4ED8AA4A, 0x5B9CCA4F, 0x682E6FF3,
+				0x748F82EE, 0x78A5636F, 0x84C87814, 0x8CC70208,
+				0x90BEFFFA, 0xA4506CEB, 0xBEF9A3F7, 0xC67178F2
+			],
+			H_trunc = [
+				0xc1059ed8, 0x367cd507, 0x3070dd17, 0xf70e5939,
+				0xffc00b31, 0x68581511, 0x64f98fa7, 0xbefa4fa4
+			],
+			H_full = [
+				0x6A09E667, 0xBB67AE85, 0x3C6EF372, 0xA54FF53A,
+				0x510E527F, 0x9B05688C, 0x1F83D9AB, 0x5BE0CD19
+			];
+
+		/* Set up the various function handles and variable for the specific
+		 * variant */
+		if ((variant === "SHA-224" || variant === "SHA-256") &&
+			(2 & SUPPORTED_ALGS))
+		{
+			/* 32-bit variant */
+			numRounds = 64;
+			lengthPosition = (((messageLen + 65) >>> 9) << 4) + 15;
+			binaryStringInc = 16;
+			binaryStringMult = 1;
+			Int = Number;
+			safeAdd_2 = safeAdd_32_2;
+			safeAdd_4 = safeAdd_32_4;
+			safeAdd_5 = safeAdd_32_5;
+			gamma0 = gamma0_32;
+			gamma1 = gamma1_32;
+			sigma0 = sigma0_32;
+			sigma1 = sigma1_32;
+			maj = maj_32;
+			ch = ch_32;
+
+			if ("SHA-224" === variant)
+			{
+				H = H_trunc;
+			}
+			else /* "SHA-256" === variant */
+			{
+				H = H_full;
+			}
+		}
+		else if ((variant === "SHA-384" || variant === "SHA-512") &&
+			(4 & SUPPORTED_ALGS))
+		{
+			/* 64-bit variant */
+			numRounds = 80;
+			lengthPosition = (((messageLen + 128) >>> 10) << 5) + 31;
+			binaryStringInc = 32;
+			binaryStringMult = 2;
+			Int = Int_64;
+			safeAdd_2 = safeAdd_64_2;
+			safeAdd_4 = safeAdd_64_4;
+			safeAdd_5 = safeAdd_64_5;
+			gamma0 = gamma0_64;
+			gamma1 = gamma1_64;
+			sigma0 = sigma0_64;
+			sigma1 = sigma1_64;
+			maj = maj_64;
+			ch = ch_64;
+
+			K = [
+				new Int(K[ 0], 0xd728ae22), new Int(K[ 1], 0x23ef65cd),
+				new Int(K[ 2], 0xec4d3b2f), new Int(K[ 3], 0x8189dbbc),
+				new Int(K[ 4], 0xf348b538), new Int(K[ 5], 0xb605d019),
+				new Int(K[ 6], 0xaf194f9b), new Int(K[ 7], 0xda6d8118),
+				new Int(K[ 8], 0xa3030242), new Int(K[ 9], 0x45706fbe),
+				new Int(K[10], 0x4ee4b28c), new Int(K[11], 0xd5ffb4e2),
+				new Int(K[12], 0xf27b896f), new Int(K[13], 0x3b1696b1),
+				new Int(K[14], 0x25c71235), new Int(K[15], 0xcf692694),
+				new Int(K[16], 0x9ef14ad2), new Int(K[17], 0x384f25e3),
+				new Int(K[18], 0x8b8cd5b5), new Int(K[19], 0x77ac9c65),
+				new Int(K[20], 0x592b0275), new Int(K[21], 0x6ea6e483),
+				new Int(K[22], 0xbd41fbd4), new Int(K[23], 0x831153b5),
+				new Int(K[24], 0xee66dfab), new Int(K[25], 0x2db43210),
+				new Int(K[26], 0x98fb213f), new Int(K[27], 0xbeef0ee4),
+				new Int(K[28], 0x3da88fc2), new Int(K[29], 0x930aa725),
+				new Int(K[30], 0xe003826f), new Int(K[31], 0x0a0e6e70),
+				new Int(K[32], 0x46d22ffc), new Int(K[33], 0x5c26c926),
+				new Int(K[34], 0x5ac42aed), new Int(K[35], 0x9d95b3df),
+				new Int(K[36], 0x8baf63de), new Int(K[37], 0x3c77b2a8),
+				new Int(K[38], 0x47edaee6), new Int(K[39], 0x1482353b),
+				new Int(K[40], 0x4cf10364), new Int(K[41], 0xbc423001),
+				new Int(K[42], 0xd0f89791), new Int(K[43], 0x0654be30),
+				new Int(K[44], 0xd6ef5218), new Int(K[45], 0x5565a910),
+				new Int(K[46], 0x5771202a), new Int(K[47], 0x32bbd1b8),
+				new Int(K[48], 0xb8d2d0c8), new Int(K[49], 0x5141ab53),
+				new Int(K[50], 0xdf8eeb99), new Int(K[51], 0xe19b48a8),
+				new Int(K[52], 0xc5c95a63), new Int(K[53], 0xe3418acb),
+				new Int(K[54], 0x7763e373), new Int(K[55], 0xd6b2b8a3),
+				new Int(K[56], 0x5defb2fc), new Int(K[57], 0x43172f60),
+				new Int(K[58], 0xa1f0ab72), new Int(K[59], 0x1a6439ec),
+				new Int(K[60], 0x23631e28), new Int(K[61], 0xde82bde9),
+				new Int(K[62], 0xb2c67915), new Int(K[63], 0xe372532b),
+				new Int(0xca273ece, 0xea26619c), new Int(0xd186b8c7, 0x21c0c207),
+				new Int(0xeada7dd6, 0xcde0eb1e), new Int(0xf57d4f7f, 0xee6ed178),
+				new Int(0x06f067aa, 0x72176fba), new Int(0x0a637dc5, 0xa2c898a6),
+				new Int(0x113f9804, 0xbef90dae), new Int(0x1b710b35, 0x131c471b),
+				new Int(0x28db77f5, 0x23047d84), new Int(0x32caab7b, 0x40c72493),
+				new Int(0x3c9ebe0a, 0x15c9bebc), new Int(0x431d67c4, 0x9c100d4c),
+				new Int(0x4cc5d4be, 0xcb3e42b6), new Int(0x597f299c, 0xfc657e2a),
+				new Int(0x5fcb6fab, 0x3ad6faec), new Int(0x6c44198c, 0x4a475817)
+			];
+
+			if ("SHA-384" === variant)
+			{
+				H = [
+					new Int(0xcbbb9d5d, H_trunc[0]), new Int(0x0629a292a, H_trunc[1]),
+					new Int(0x9159015a, H_trunc[2]), new Int(0x0152fecd8, H_trunc[3]),
+					new Int(0x67332667, H_trunc[4]), new Int(0x98eb44a87, H_trunc[5]),
+					new Int(0xdb0c2e0d, H_trunc[6]), new Int(0x047b5481d, H_trunc[7])
+				];
+			}
+			else /* "SHA-512" === variant */
+			{
+				H = [
+					new Int(H_full[0], 0xf3bcc908), new Int(H_full[1], 0x84caa73b),
+					new Int(H_full[2], 0xfe94f82b), new Int(H_full[3], 0x5f1d36f1),
+					new Int(H_full[4], 0xade682d1), new Int(H_full[5], 0x2b3e6c1f),
+					new Int(H_full[6], 0xfb41bd6b), new Int(H_full[7], 0x137e2179)
+				];
+			}
+		}
+		else
+		{
+			throw "Unexpected error in SHA-2 implementation";
+		}
+
+		while (message.length <= lengthPosition)
+		{
+			message.push(0);
+		}
+		/* Append '1' at the end of the binary string */
+		message[messageLen >>> 5] |= 0x80 << (24 - messageLen % 32);
+		/* Append length of binary string in the position such that the new
+		 * length is correct */
+		message[lengthPosition] = messageLen;
+
+		appendedMessageLength = message.length;
+
+		for (i = 0; i < appendedMessageLength; i += binaryStringInc)
+		{
+			a = H[0];
+			b = H[1];
+			c = H[2];
+			d = H[3];
+			e = H[4];
+			f = H[5];
+			g = H[6];
+			h = H[7];
+
+			for (t = 0; t < numRounds; t += 1)
+			{
+				if (t < 16)
+				{
+					offset = t * binaryStringMult + i;
+					int1 = (message.length <= offset) ? 0 : message[offset];
+					int2 = (message.length <= offset + 1) ? 0 : message[offset + 1];
+					/* Bit of a hack - for 32-bit, the second term is ignored */
+					W[t] = new Int(int1, int2);
+				}
+				else
+				{
+					W[t] = safeAdd_4(
+							gamma1(W[t - 2]), W[t - 7],
+							gamma0(W[t - 15]), W[t - 16]
+						);
+				}
+
+				T1 = safeAdd_5(h, sigma1(e), ch(e, f, g), K[t], W[t]);
+				T2 = safeAdd_2(sigma0(a), maj(a, b, c));
+				h = g;
+				g = f;
+				f = e;
+				e = safeAdd_2(d, T1);
+				d = c;
+				c = b;
+				b = a;
+				a = safeAdd_2(T1, T2);
+
+			}
+
+			H[0] = safeAdd_2(a, H[0]);
+			H[1] = safeAdd_2(b, H[1]);
+			H[2] = safeAdd_2(c, H[2]);
+			H[3] = safeAdd_2(d, H[3]);
+			H[4] = safeAdd_2(e, H[4]);
+			H[5] = safeAdd_2(f, H[5]);
+			H[6] = safeAdd_2(g, H[6]);
+			H[7] = safeAdd_2(h, H[7]);
+		}
+
+		if (("SHA-224" === variant) && (2 & SUPPORTED_ALGS))
+		{
+			retVal = [
+				H[0], H[1], H[2], H[3],
+				H[4], H[5], H[6]
+			];
+		}
+		else if (("SHA-256" === variant) && (2 & SUPPORTED_ALGS))
+		{
+			retVal = H;
+		}
+		else if (("SHA-384" === variant) && (4 & SUPPORTED_ALGS))
+		{
+			retVal = [
+				H[0].highOrder, H[0].lowOrder,
+				H[1].highOrder, H[1].lowOrder,
+				H[2].highOrder, H[2].lowOrder,
+				H[3].highOrder, H[3].lowOrder,
+				H[4].highOrder, H[4].lowOrder,
+				H[5].highOrder, H[5].lowOrder
+			];
+		}
+		else if (("SHA-512" === variant) && (4 & SUPPORTED_ALGS))
+		{
+			retVal = [
+				H[0].highOrder, H[0].lowOrder,
+				H[1].highOrder, H[1].lowOrder,
+				H[2].highOrder, H[2].lowOrder,
+				H[3].highOrder, H[3].lowOrder,
+				H[4].highOrder, H[4].lowOrder,
+				H[5].highOrder, H[5].lowOrder,
+				H[6].highOrder, H[6].lowOrder,
+				H[7].highOrder, H[7].lowOrder
+			];
+		}
+		else /* This should never be reached */
+		{
+			throw "Unexpected error in SHA-2 implementation";
+		}
+
+		return retVal;
+	}
+
+	/**
+	 * jsSHA is the workhorse of the library.  Instantiate it with the string to
+	 * be hashed as the parameter
+	 *
+	 * @constructor
+	 * @this {jsSHA}
+	 * @param {string} srcString The string to be hashed
+	 * @param {string} inputFormat The format of srcString, HEX, ASCII, TEXT,
+     *   B64, or BYTES
+	 * @param {string=} encoding The text encoding to use to encode the source
+	 *   string
+	 */
+	var jsSHA = function(srcString, inputFormat, encoding)
+	{
+		var strBinLen = 0, strToHash = [0], utfType = '', srcConvertRet = null;
+
+		utfType = encoding || "UTF8";
+
+		if (!(("UTF8" === utfType) || ("UTF16BE" === utfType) || ("UTF16LE" === utfType)))
+		{
+			throw "encoding must be UTF8, UTF16BE, or UTF16LE";
+		}
+
+		/* Convert the input string into the correct type */
+		if ("HEX" === inputFormat)
+		{
+			if (0 !== (srcString.length % 2))
+			{
+				throw "srcString of HEX type must be in byte increments";
+			}
+			srcConvertRet = hex2binb(srcString);
+			strBinLen = srcConvertRet["binLen"];
+			strToHash = srcConvertRet["value"];
+		}
+		else if (("TEXT" === inputFormat) || ("ASCII" === inputFormat))
+		{
+			srcConvertRet = str2binb(srcString, utfType);
+			strBinLen = srcConvertRet["binLen"];
+			strToHash = srcConvertRet["value"];
+		}
+		else if ("B64" === inputFormat)
+		{
+			srcConvertRet = b642binb(srcString);
+			strBinLen = srcConvertRet["binLen"];
+			strToHash = srcConvertRet["value"];
+		}
+		else if ("BYTES" === inputFormat)
+		{
+			srcConvertRet = bytes2binb(srcString);
+			strBinLen = srcConvertRet["binLen"];
+			strToHash = srcConvertRet["value"];
+		}
+		else
+		{
+			throw "inputFormat must be HEX, TEXT, ASCII, B64, or BYTES";
+		}
+
+		/**
+		 * Returns the desired SHA hash of the string specified at instantiation
+		 * using the specified parameters
+		 *
+		 * @expose
+		 * @param {string} variant The desired SHA variant (SHA-1, SHA-224,
+		 *	 SHA-256, SHA-384, or SHA-512)
+		 * @param {string} format The desired output formatting (B64, HEX, or BYTES)
+		 * @param {number=} numRounds The number of rounds of hashing to be
+		 *   executed
+		 * @param {{outputUpper : boolean, b64Pad : string}=} outputFormatOpts
+		 *   Hash list of output formatting options
+		 * @return {string} The string representation of the hash in the format
+		 *   specified
+		 */
+		this.getHash = function(variant, format, numRounds, outputFormatOpts)
+		{
+			var formatFunc = null, message = strToHash.slice(),
+				messageBinLen = strBinLen, i;
+
+			/* Need to do argument patching since both numRounds and
+			   outputFormatOpts are optional */
+			if (3 === arguments.length)
+			{
+				if ("number" !== typeof numRounds)
+				{
+					outputFormatOpts = numRounds;
+					numRounds = 1;
+				}
+			}
+			else if (2 === arguments.length)
+			{
+				numRounds = 1;
+			}
+
+			/* Validate the numRounds argument */
+			if ((numRounds !== parseInt(numRounds, 10)) || (1 > numRounds))
+			{
+				throw "numRounds must a integer >= 1";
+			}
+
+			/* Validate the output format selection */
+			switch (format)
+			{
+			case "HEX":
+				formatFunc = binb2hex;
+				break;
+			case "B64":
+				formatFunc = binb2b64;
+				break;
+			case "BYTES":
+				formatFunc = binb2bytes;
+				break;
+			default:
+				throw "format must be HEX, B64, or BYTES";
+			}
+
+			if (("SHA-1" === variant) && (1 & SUPPORTED_ALGS))
+			{
+				for (i = 0; i < numRounds; i += 1)
+				{
+					message = coreSHA1(message, messageBinLen);
+					messageBinLen = 160;
+				}
+			}
+			else if (("SHA-224" === variant) && (2 & SUPPORTED_ALGS))
+			{
+				for (i = 0; i < numRounds; i += 1)
+				{
+					message = coreSHA2(message, messageBinLen, variant);
+					messageBinLen = 224;
+				}
+			}
+			else if (("SHA-256" === variant) && (2 & SUPPORTED_ALGS))
+			{
+				for (i = 0; i < numRounds; i += 1)
+				{
+					message = coreSHA2(message, messageBinLen, variant);
+					messageBinLen = 256;
+				}
+			}
+			else if (("SHA-384" === variant) && (4 & SUPPORTED_ALGS))
+			{
+				for (i = 0; i < numRounds; i += 1)
+				{
+					message = coreSHA2(message, messageBinLen, variant);
+					messageBinLen = 384;
+				}
+			}
+			else if (("SHA-512" === variant) && (4 & SUPPORTED_ALGS))
+			{
+				for (i = 0; i < numRounds; i += 1)
+				{
+					message = coreSHA2(message, messageBinLen, variant);
+					messageBinLen = 512;
+				}
+			}
+			else
+			{
+				throw "Chosen SHA variant is not supported";
+			}
+
+			return formatFunc(message, getOutputOpts(outputFormatOpts));
+		};
+
+		/**
+		 * Returns the desired HMAC of the string specified at instantiation
+		 * using the key and variant parameter
+		 *
+		 * @expose
+		 * @param {string} key The key used to calculate the HMAC
+		 * @param {string} inputFormat The format of key, HEX, TEXT, ASCII,
+         *   B64, or BYTES
+		 * @param {string} variant The desired SHA variant (SHA-1, SHA-224,
+		 *	 SHA-256, SHA-384, or SHA-512)
+		 * @param {string} outputFormat The desired output formatting
+		 *   (B64, HEX, or BYTES)
+		 * @param {{outputUpper : boolean, b64Pad : string}=} outputFormatOpts
+		 *   associative array of output formatting options
+		 * @return {string} The string representation of the hash in the format
+		 *   specified
+		 */
+		this.getHMAC = function(key, inputFormat, variant, outputFormat,
+			outputFormatOpts)
+		{
+			var formatFunc, keyToUse, blockByteSize, blockBitSize, i,
+				retVal, lastArrayIndex, keyBinLen, hashBitSize,
+				keyWithIPad = [], keyWithOPad = [], keyConvertRet = null;
+
+			/* Validate the output format selection */
+			switch (outputFormat)
+			{
+			case "HEX":
+				formatFunc = binb2hex;
+				break;
+			case "B64":
+				formatFunc = binb2b64;
+				break;
+			case "BYTES":
+				formatFunc = binb2bytes;
+				break;
+			default:
+				throw "outputFormat must be HEX, B64, or BYTES";
+			}
+
+			/* Validate the hash variant selection and set needed variables */
+			if (("SHA-1" === variant) && (1 & SUPPORTED_ALGS))
+			{
+				blockByteSize = 64;
+				hashBitSize = 160;
+			}
+			else if (("SHA-224" === variant) && (2 & SUPPORTED_ALGS))
+			{
+				blockByteSize = 64;
+				hashBitSize = 224;
+			}
+			else if (("SHA-256" === variant) && (2 & SUPPORTED_ALGS))
+			{
+				blockByteSize = 64;
+				hashBitSize = 256;
+			}
+			else if (("SHA-384" === variant) && (4 & SUPPORTED_ALGS))
+			{
+				blockByteSize = 128;
+				hashBitSize = 384;
+			}
+			else if (("SHA-512" === variant) && (4 & SUPPORTED_ALGS))
+			{
+				blockByteSize = 128;
+				hashBitSize = 512;
+			}
+			else
+			{
+				throw "Chosen SHA variant is not supported";
+			}
+
+			/* Validate input format selection */
+			if ("HEX" === inputFormat)
+			{
+				keyConvertRet = hex2binb(key);
+				keyBinLen = keyConvertRet["binLen"];
+				keyToUse = keyConvertRet["value"];
+			}
+			else if (("TEXT" === inputFormat) || ("ASCII" === inputFormat))
+			{
+				keyConvertRet = str2binb(key, utfType);
+				keyBinLen = keyConvertRet["binLen"];
+				keyToUse = keyConvertRet["value"];
+			}
+			else if ("B64" === inputFormat)
+			{
+				keyConvertRet = b642binb(key);
+				keyBinLen = keyConvertRet["binLen"];
+				keyToUse = keyConvertRet["value"];
+			}
+			else if ("BYTES" === inputFormat)
+			{
+				keyConvertRet = bytes2binb(key);
+				keyBinLen = keyConvertRet["binLen"];
+				keyToUse = keyConvertRet["value"];
+			}
+			else
+			{
+				throw "inputFormat must be HEX, TEXT, ASCII, B64, or BYTES";
+			}
+
+			/* These are used multiple times, calculate and store them */
+			blockBitSize = blockByteSize * 8;
+			lastArrayIndex = (blockByteSize / 4) - 1;
+
+			/* Figure out what to do with the key based on its size relative to
+			 * the hash's block size */
+			if (blockByteSize < (keyBinLen / 8))
+			{
+				if (("SHA-1" === variant) && (1 & SUPPORTED_ALGS))
+				{
+					keyToUse = coreSHA1(keyToUse, keyBinLen);
+				}
+				else if (6 & SUPPORTED_ALGS)
+				{
+					keyToUse = coreSHA2(keyToUse, keyBinLen, variant);
+				}
+				else
+				{
+					throw "Unexpected error in HMAC implementation";
+				}
+				/* For all variants, the block size is bigger than the output
+				 * size so there will never be a useful byte at the end of the
+				 * string */
+				while (keyToUse.length <= lastArrayIndex)
+				{
+					keyToUse.push(0);
+				}
+				keyToUse[lastArrayIndex] &= 0xFFFFFF00;
+			}
+			else if (blockByteSize > (keyBinLen / 8))
+			{
+				/* If the blockByteSize is greater than the key length, there
+				 * will always be at LEAST one "useless" byte at the end of the
+				 * string */
+				while (keyToUse.length <= lastArrayIndex)
+				{
+					keyToUse.push(0);
+				}
+				keyToUse[lastArrayIndex] &= 0xFFFFFF00;
+			}
+
+			/* Create ipad and opad */
+			for (i = 0; i <= lastArrayIndex; i += 1)
+			{
+				keyWithIPad[i] = keyToUse[i] ^ 0x36363636;
+				keyWithOPad[i] = keyToUse[i] ^ 0x5C5C5C5C;
+			}
+
+			/* Calculate the HMAC */
+			if (("SHA-1" === variant) && (1 & SUPPORTED_ALGS))
+			{
+				retVal = coreSHA1(
+					keyWithOPad.concat(
+						coreSHA1(
+							keyWithIPad.concat(strToHash),
+							blockBitSize + strBinLen
+						)
+					),
+					blockBitSize + hashBitSize);
+			}
+			else if (6 & SUPPORTED_ALGS)
+			{
+				retVal = coreSHA2(
+					keyWithOPad.concat(
+						coreSHA2(
+							keyWithIPad.concat(strToHash),
+							blockBitSize + strBinLen,
+							variant
+						)
+					),
+					blockBitSize + hashBitSize, variant);
+			}
+			else
+			{
+				throw "Unexpected error in HMAC implementation";
+			}
+
+			return formatFunc(retVal, getOutputOpts(outputFormatOpts));
+		};
+	};
+
+	if (("function" === typeof define) && (define["amd"])) /* AMD Support */
+	{
+		define(function()
+		{
+			return jsSHA;
+		});
+	} else if ("undefined" !== typeof exports) /* Node Support */
+	{
+		if (("undefined" !== typeof module) && module["exports"])
+		{
+		  module["exports"] = exports = jsSHA;
+		}
+		else {
+			exports = jsSHA;
+		}
+	} else { /* Browsers and Web Workers*/
+		global["jsSHA"] = jsSHA;
+	}
+}(this));
